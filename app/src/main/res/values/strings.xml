@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Devil Pantry</string>
+    <string name="pantry">My Pantry</string>
+    <string name="grocery">Grocery List</string>
+    <string name="recipe">Find Recipe</string>
+    <string name="todo">TO DO!</string>
+</resources>
