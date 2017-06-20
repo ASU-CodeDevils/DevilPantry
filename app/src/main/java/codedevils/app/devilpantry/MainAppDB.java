@@ -11,10 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by Avery on 6/5/2017.
- */
-
 public class MainAppDB extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
     private static String dbName = "mainapp";
@@ -72,7 +68,7 @@ public class MainAppDB extends SQLiteOpenHelper{
             if(f.exists()){
                 checker = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);
                 if(checker != null){
-                    Cursor tabs = checker.rawQuery("SELECT brand FROM mainapp WHERE type='table' and name='pantry';", null);
+                    Cursor tabs = checker.rawQuery("SELECT name FROM sqlite_master WHERE type='table' and name='pantry';", null);
                     boolean tabExists = false;
                     if(tabs != null){
                         tabs.moveToNext();
