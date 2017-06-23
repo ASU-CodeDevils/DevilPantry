@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pantry_init"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="@string/todo"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
+    <TextView
+        android:id="@+id/pantryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_pantry"
+        android:textSize="45dp"
+        android:layout_marginBottom="45dp"
+        android:layout_centerHorizontal="true"/>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/textView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="46dp"
-            android:text="@string/pantry"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pantryAdd"
+        android:onClick="addClicked"
+        android:text="@string/add_item"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="45dp"
+        android:layout_below="@id/pantryText"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pantryViewAll"
+        android:onClick="viewAllClicked"
+        android:text="@string/view_all"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/pantryAdd"/>
+
     </RelativeLayout>
 
