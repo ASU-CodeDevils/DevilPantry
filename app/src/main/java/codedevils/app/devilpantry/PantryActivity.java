@@ -1,16 +1,23 @@
 package codedevils.app.devilpantry;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +46,26 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     }
 
     public void addClicked(View v){
-        //TO DO
+        setContentView(R.layout.activity_pantry_add_item);
+        Button btn = (Button)findViewById(R.id.button2);
+
+    }
+
+    public void processClick(View v){
+        TextView tv = (TextView)findViewById(R.id.txtContent);
+        ImageView myImageView = (ImageView)findViewById(R.id.imgview);
+        Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.doritos_test);
+        myImageView.setImageBitmap(myBitmap);
+        BarcodeDetector detector = new BarcodeDetector.Builder(getApplicationContext())
+                .setBarcodeFormats(Barcode.ALL_FORMATS).build();
+        if(!detector.isOperational()){
+            tv.setText("Could not set up detector!  Try again.");
+            return;
+        }
+        Frame f = new Frame.Builder().setBitmap(myBitmap).build();
+        SparseArray<Barcode> barcodes = detector.detect(f);
+        Barcode thisCode = barcodes.valueAt(0);
+        tv.setText(thisCode.rawValue); //THE TEXTVIEW SHOWS THE UPC NUMBER
     }
 
     private void populateListView(String select){
