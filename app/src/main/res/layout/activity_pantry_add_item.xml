@@ -13,18 +13,27 @@
         android:text="@string/process" />
 
     <TextView
-        android:id="@+id/txtContent"
+        android:id="@+id/json_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="86dp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
-        android:text="" />
+        android:text="@string/json_content" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/json_text"
+        android:tag="@string/photo"
         android:id="@+id/imgview"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/upc_code" />
 </RelativeLayout>
