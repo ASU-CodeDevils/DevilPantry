@@ -43,7 +43,6 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         setContentView(R.layout.activity_pantry);
         Button add = (Button) findViewById(R.id.pantryAdd);
         Button viewAll = (Button) findViewById(R.id.pantryViewAll);
-        //tv1 = (TextView) findViewById(R.id.json_text);
     }
 
     public void viewAllClicked(View v) {
@@ -55,13 +54,11 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
 
     public void addClicked(View v) {
         setContentView(R.layout.activity_pantry_add_item);
-        Button btn = (Button) findViewById(R.id.button2);
-
+        Button btn = (Button) findViewById(R.id.process_button);
     }
 
     public void processClick(View v) {
         tv1 = (TextView) findViewById(R.id.json_text);
-        TextView upcTV = (TextView) findViewById(R.id.textView3);
         ImageView myImageView = (ImageView) findViewById(R.id.imgview);
         Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.doritos_test);
         myImageView.setImageBitmap(myBitmap);
@@ -74,25 +71,19 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         Frame f = new Frame.Builder().setBitmap(myBitmap).build();
         SparseArray<Barcode> barcodes = detector.detect(f);
         Barcode thisCode = barcodes.valueAt(0);
-        upcTV.setText(thisCode.rawValue); //THIS TEXTVIEW SHOWS THE UPC NUMBER
-        processUPC(thisCode.rawValue);
-    }
-
-    private void processUPC(String upc) {
-        String tag = "PROCESSING UPC";
-        tv1 = (TextView) findViewById(R.id.json_text);
+        String upc = thisCode.rawValue;
         String jsonResult;
         try{
+            String tag = "PROCESSING UPC";
             Log.i(tag, upc);
             RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
             jsonResult = task.execute(upc).get();
-        }
-        catch (Exception e){
-            Log.e("ERROR", e.getMessage(), e);
+        }catch (Exception e){
+            String tag = "ERROR";
+            Log.e(tag, e.getMessage(), e);
             jsonResult = "ERROR RETRIEVING JSON";
         }
         tv1.setText(jsonResult);
-
     }
 
     private void populateListView(String select) {
@@ -154,7 +145,8 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
 
                 return sb.toString();
             } catch (Exception e) {
-                Log.e("ERROR", e.getMessage(), e);
+                String tag = "ERROR";
+                Log.e(tag, e.getMessage(), e);
                 return null;
             }
         }

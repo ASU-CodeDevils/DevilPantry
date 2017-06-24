@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/process_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -16,7 +16,7 @@
         android:id="@+id/json_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button2"
+        android:layout_below="@+id/process_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
@@ -29,11 +29,4 @@
         android:tag="@string/photo"
         android:id="@+id/imgview"/>
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/upc_code" />
 </RelativeLayout>
