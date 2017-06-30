@@ -21,6 +21,9 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -60,7 +63,8 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     public void processClick(View v) {
         tv1 = (TextView) findViewById(R.id.json_text);
         ImageView myImageView = (ImageView) findViewById(R.id.imgview);
-        Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.doritos_test);
+        Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                R.drawable.doritos_test);
         myImageView.setImageBitmap(myBitmap);
         BarcodeDetector detector = new BarcodeDetector.Builder(getApplicationContext())
                 .setBarcodeFormats(Barcode.ALL_FORMATS).build();
@@ -71,7 +75,12 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         Frame f = new Frame.Builder().setBitmap(myBitmap).build();
         SparseArray<Barcode> barcodes = detector.detect(f);
         Barcode thisCode = barcodes.valueAt(0);
-        String upc = thisCode.rawValue;
+        String theCode = thisCode.rawValue;
+        processUPC(theCode);
+        tv1.setText("");
+    }
+
+    private String processUPC(String upc){
         String jsonResult;
         try{
             String tag = "PROCESSING UPC";
@@ -83,7 +92,27 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             Log.e(tag, e.getMessage(), e);
             jsonResult = "ERROR RETRIEVING JSON";
         }
-        tv1.setText(jsonResult);
+        return jsonResult;
+    }
+
+    private void processJson(String jsonString){
+        try{
+            JSONObject obj = new JSONObject(jsonString);
+            if(obj.getString("valid").equals("true")){
+                String upc = obj.getString("number");
+                String brand = obj.getString("itemname");
+                String description = obj.getString("alias");
+                String price = obj.getString("avg_price");
+                //this should be our sqlite statement:
+                String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
+                        "('" + upc + "', '" + brand + "', '" + description + "', '" + 1 + "', '" + price + "';";
+            }
+            if(obj.getString("valid").equals("false")){
+                setContentView(R.layout.activity_pantry_add_item_manual);
+            }
+        } catch (Exception e){
+            Log.e("ERROR", "not a Json object");
+        }
     }
 
     private void populateListView(String select) {
