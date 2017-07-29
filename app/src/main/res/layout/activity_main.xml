@@ -7,7 +7,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/pantryButton"
+            android:id="@+id/pantry_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -17,20 +17,20 @@
             android:text="@string/pantry" />
 
         <Button
-            android:id="@+id/grocButton"
+            android:id="@+id/grocery_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/pantryButton"
+            android:layout_below="@+id/pantry_button"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="75dp"
             android:onClick="grocClick"
             android:text="@string/grocery" />
 
         <Button
-            android:id="@+id/recipeButton"
+            android:id="@+id/recipe_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/grocButton"
+            android:layout_below="@+id/grocery_button"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="75dp"
             android:onClick="recipeClick"

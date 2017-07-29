@@ -12,9 +12,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button pantryButton = (Button)findViewById(R.id.pantryButton);
-        Button grocButton = (Button)findViewById(R.id.grocButton);
-        Button recipeButton = (Button)findViewById(R.id.recipeButton);
+        Button pantryButton = (Button)findViewById(R.id.pantry_button);
+        Button grocButton = (Button)findViewById(R.id.grocery_button);
+        Button recipeButton = (Button)findViewById(R.id.recipe_button);
     }
 
     public void pantryClick(View v){
