@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -72,12 +73,19 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             tv1.setText(R.string.try_again);
             return;
         }
+        
         Frame f = new Frame.Builder().setBitmap(myBitmap).build();
+
         SparseArray<Barcode> barcodes = detector.detect(f);
-        Barcode thisCode = barcodes.valueAt(0);
-        String theCode = thisCode.rawValue;
-        //processUPC(theCode);
-        tv1.setText(processUPC(theCode));
+
+        for(int i = 0; i < barcodes.size(); i++){
+            Barcode thisCode = barcodes.valueAt(i);
+            String theCode = thisCode.rawValue;
+            tv1.setText("");
+            myImageView.setImageDrawable(null);
+            Toast.makeText(getApplicationContext(), processUPC(theCode), Toast.LENGTH_LONG).show();
+            i++;
+        }
     }
 
     private String processUPC(String upc){
@@ -86,9 +94,12 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             String tag = "PROCESSING UPC";
             Log.i(tag, upc);
             RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
-
-            if(processJson(task.execute(upc).get())) {
+            String result = processJson(task.execute(upc).get());
+            if(result.equals("ADDED")) {
                 jsonResult = "ADDED ITEM TO DATABASE";
+            }
+            if(result.equals("UPDATED")){
+                jsonResult = "UPDATED ITEM QUANTITY";
             }
             else{
                 jsonResult = "COULDN'T ADD ITEM";
@@ -101,8 +112,8 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         return jsonResult;
     }
 
-    private boolean processJson(String jsonString){
-        boolean ret = false;
+    private String processJson(String jsonString){
+        String ret = "FAILED";
         try{
             JSONObject obj = new JSONObject(jsonString);
             if(obj.getString("valid").equals("true")){
@@ -120,13 +131,13 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
                         String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
                                 "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
                         pantryDB.execSQL(insert);
-                        ret = true;
+                        ret = "ADDED";
                     }
                     else{
                         int newQuant = Integer.parseInt(c.getString(0)) + 1;
                         String update = "UPDATE pantry SET Quantity = '" + newQuant + "' WHERE UPC = '" + upc + "';";
                         pantryDB.execSQL(update);
-                        ret = true;
+                        ret = "UPDATED";
                     }
                     pantryDB.close();
                     db.close();

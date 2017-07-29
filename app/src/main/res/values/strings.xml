@@ -12,7 +12,7 @@
     <string name="view_all">View All Items</string>
     <string name="process">Process</string>
     <string name="upc_code">upc_code</string>
-    <string name="json_content">json_content</string>
+    <string name="json_content">----text content----</string>
     <string name="photo">photo</string>
     <string name="error_text">THERE WAS AN ERROR</string>
     <string name="try_again">Could not set up detector!  Try pressing button again.</string>
