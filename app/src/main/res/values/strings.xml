@@ -4,9 +4,9 @@
     <string name="grocery">Grocery List</string>
     <string name="recipe">Find Recipe</string>
     <string name="todo">TO DO!</string>
-    <string name="name">Name</string>
+    <string name="item">Item</string>
     <string name="description">Description</string>
-    <string name="quantity">Quantity Available</string>
+    <string name="quantity">Quantity</string>
     <string name="add_item">Add Item</string>
     <string name="my_pantry">MY PANTRY</string>
     <string name="view_all">View All Items</string>
@@ -20,6 +20,6 @@
     <string-array name="pantry_headers">
         <item>Item</item>
         <item>Description</item>
-        <item>Quantity Available</item>
+        <item>Quantity</item>
     </string-array>
 </resources>

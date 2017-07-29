@@ -106,18 +106,15 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             JSONObject obj = new JSONObject(jsonString);
             if(obj.getString("valid").equals("true")){
                 String upc = obj.getString("number");
-                String brand = obj.getString("itemname");
+                String item = obj.getString("itemname");
                 String description = obj.getString("alias");
                 String price = obj.getString("avg_price");
-                //this should be our sqlite statement:
                 String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
-                        "('" + upc + "', '" + brand + "', '" + description + "', '" + 1 + "', '" + price + "');";
+                        "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
                 try{
                     db = new MainAppDB(this);
                     pantryDB = db.openDB();
-
                     pantryDB.execSQL(insert);
-
                     pantryDB.close();
                     db.close();
                     ret = true;
@@ -145,9 +142,9 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             Cursor c = pantryDB.rawQuery(select, null);
             cursorMap = new ArrayList<HashMap<String, String>>();
             HashMap<String, String> colTitles = new HashMap<>();
-            colTitles.put("Name", "Name");
+            colTitles.put("Item", "Item");
             colTitles.put("Description", "Description");
-            colTitles.put("Quantity", "Quantity Available");
+            colTitles.put("Quantity", "Quantity");
             cursorMap.add(colTitles);
             while (c.moveToNext()) {
                 HashMap<String, String> map = new HashMap<>();
