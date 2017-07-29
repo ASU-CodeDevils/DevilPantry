@@ -86,6 +86,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             String tag = "PROCESSING UPC";
             Log.i(tag, upc);
             RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
+
             if(processJson(task.execute(upc).get())) {
                 jsonResult = "ADDED ITEM TO DATABASE";
             }
@@ -109,15 +110,26 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
                 String item = obj.getString("itemname");
                 String description = obj.getString("alias");
                 String price = obj.getString("avg_price");
-                String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
-                        "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
+
                 try{
                     db = new MainAppDB(this);
                     pantryDB = db.openDB();
-                    pantryDB.execSQL(insert);
+                    String check = "SELECT Quantity FROM pantry WHERE UPC = '" + upc + "';";
+                    Cursor c = pantryDB.rawQuery(check, null);
+                    if(!c.moveToFirst()){
+                        String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
+                                "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
+                        pantryDB.execSQL(insert);
+                        ret = true;
+                    }
+                    else{
+                        int newQuant = Integer.parseInt(c.getString(0)) + 1;
+                        String update = "UPDATE pantry SET Quantity = '" + newQuant + "' WHERE UPC = '" + upc + "';";
+                        pantryDB.execSQL(update);
+                        ret = true;
+                    }
                     pantryDB.close();
                     db.close();
-                    ret = true;
                 }
                 catch (Exception e){
                     String tag = "ERROR";
