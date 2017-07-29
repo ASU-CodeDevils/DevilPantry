@@ -51,7 +51,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     public void viewAllClicked(View v) {
         setContentView(R.layout.activity_pantry_view_all);
         pantryLV = (ListView) findViewById(R.id.pantryView);
-        String s = "SELECT brand, item, quantity FROM pantry ORDER BY item ASC;";
+        String s = "SELECT Item, Description, Quantity FROM pantry ORDER BY item ASC;";
         this.populateListView(s);
     }
 
@@ -76,8 +76,8 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         SparseArray<Barcode> barcodes = detector.detect(f);
         Barcode thisCode = barcodes.valueAt(0);
         String theCode = thisCode.rawValue;
-        processUPC(theCode);
-        tv1.setText("");
+        //processUPC(theCode);
+        tv1.setText(processUPC(theCode));
     }
 
     private String processUPC(String upc){
@@ -86,7 +86,12 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             String tag = "PROCESSING UPC";
             Log.i(tag, upc);
             RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
-            jsonResult = task.execute(upc).get();
+            if(processJson(task.execute(upc).get())) {
+                jsonResult = "ADDED ITEM TO DATABASE";
+            }
+            else{
+                jsonResult = "COULDN'T ADD ITEM";
+            }
         }catch (Exception e){
             String tag = "ERROR";
             Log.e(tag, e.getMessage(), e);
@@ -95,7 +100,8 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         return jsonResult;
     }
 
-    private void processJson(String jsonString){
+    private boolean processJson(String jsonString){
+        boolean ret = false;
         try{
             JSONObject obj = new JSONObject(jsonString);
             if(obj.getString("valid").equals("true")){
@@ -105,7 +111,21 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
                 String price = obj.getString("avg_price");
                 //this should be our sqlite statement:
                 String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
-                        "('" + upc + "', '" + brand + "', '" + description + "', '" + 1 + "', '" + price + "';";
+                        "('" + upc + "', '" + brand + "', '" + description + "', '" + 1 + "', '" + price + "');";
+                try{
+                    db = new MainAppDB(this);
+                    pantryDB = db.openDB();
+
+                    pantryDB.execSQL(insert);
+
+                    pantryDB.close();
+                    db.close();
+                    ret = true;
+                }
+                catch (Exception e){
+                    String tag = "ERROR";
+                    Log.e(tag, e.getMessage(), e);
+                }
             }
             if(obj.getString("valid").equals("false")){
                 setContentView(R.layout.activity_pantry_add_item_manual);
@@ -113,6 +133,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         } catch (Exception e){
             Log.e("ERROR", "not a Json object");
         }
+        return ret;
     }
 
     private void populateListView(String select) {
@@ -130,7 +151,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             cursorMap.add(colTitles);
             while (c.moveToNext()) {
                 HashMap<String, String> map = new HashMap<>();
-                map.put("Name", c.getString(0));
+                map.put("Item", c.getString(0));
                 map.put("Description", c.getString(1));
                 map.put("Quantity", c.getString(2));
                 cursorMap.add(map);

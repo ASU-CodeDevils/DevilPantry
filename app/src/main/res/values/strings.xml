@@ -18,7 +18,7 @@
     <string name="try_again">Could not set up detector!  Try pressing button again.</string>
 
     <string-array name="pantry_headers">
-        <item>Name</item>
+        <item>Item</item>
         <item>Description</item>
         <item>Quantity Available</item>
     </string-array>
