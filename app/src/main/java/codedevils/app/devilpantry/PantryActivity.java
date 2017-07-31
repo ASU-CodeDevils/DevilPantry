@@ -1,5 +1,6 @@
 package codedevils.app.devilpantry;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-
 
 import org.json.JSONObject;
 
@@ -58,20 +58,45 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     public void addClicked(View v) {
         setContentView(R.layout.activity_pantry_add_item);
         Button btn = (Button) findViewById(R.id.process_button);
+
+        //Switches to the AddItemActivity class to make use of the Barcode Detector.
+        btn.setOnClickListener(
+                new Button.OnClickListener(){
+                    public void onClick(View v){
+                        Intent startCreateActivity = new Intent(getApplicationContext(),
+                                AddItemActivity.class);
+                        startActivity(startCreateActivity);
+
+                    }
+                }
+        );
     }
 
+    /**
+     * This method is controlling the moment when the process button is
+     * clicked. It ought to then read the barcode and pass that information
+     * along to the appropriate place.
+     * @param v
+     */
     public void processClick(View v) {
         tv1 = (TextView) findViewById(R.id.json_text);
         ImageView myImageView = (ImageView) findViewById(R.id.imgview);
-        Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+
+        //The following is an stock image Avery added.
+        final Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext()
+                        .getResources(),
                 R.drawable.doritos_test);
         myImageView.setImageBitmap(myBitmap);
+
         BarcodeDetector detector = new BarcodeDetector.Builder(getApplicationContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS).build();
+               .setBarcodeFormats(Barcode.ALL_FORMATS).build();
+
+
         if (!detector.isOperational()) {
             tv1.setText(R.string.try_again);
             return;
         }
+
         Frame f = new Frame.Builder().setBitmap(myBitmap).build();
         SparseArray<Barcode> barcodes = detector.detect(f);
         Barcode thisCode = barcodes.valueAt(0);
@@ -79,6 +104,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         processUPC(theCode);
         tv1.setText("");
     }
+
 
     private String processUPC(String upc){
         String jsonResult;
