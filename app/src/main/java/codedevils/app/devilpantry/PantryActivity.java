@@ -73,7 +73,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             tv1.setText(R.string.try_again);
             return;
         }
-        
+
         Frame f = new Frame.Builder().setBitmap(myBitmap).build();
 
         SparseArray<Barcode> barcodes = detector.detect(f);
@@ -86,6 +86,7 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
             Toast.makeText(getApplicationContext(), processUPC(theCode), Toast.LENGTH_LONG).show();
             i++;
         }
+        setContentView(R.layout.activity_pantry);
     }
 
     private String processUPC(String upc){
