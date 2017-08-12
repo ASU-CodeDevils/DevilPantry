@@ -3,6 +3,7 @@
     package="codedevils.app.devilpantry">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -20,7 +21,10 @@
         </activity>
         <activity android:name=".PantryActivity" />
         <activity android:name=".GroceryActivity" />
-        <activity android:name=".RecipeActivity"></activity>
+        <activity android:name=".RecipeActivity"/>
+        <activity android:name=".AddItemActivity"/>
+
+        <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="barcode"/>
     </application>
 
 </manifest>
