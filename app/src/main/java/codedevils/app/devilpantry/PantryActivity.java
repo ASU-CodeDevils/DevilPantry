@@ -38,8 +38,6 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     private MainAppDB db;
     private SQLiteDatabase pantryDB;
     private List<HashMap<String, String>> cursorMap;
-    private String query;
-    TextView tv1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,129 +55,9 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
     }
 
     public void addClicked(View v) {
-        setContentView(R.layout.activity_pantry_add_item);
-        Button btn = (Button) findViewById(R.id.process_button);
-
-        //Switches to the AddItemActivity class to make use of the Barcode Detector.
-        btn.setOnClickListener(
-                new Button.OnClickListener(){
-                    public void onClick(View v){
-                        Intent startCreateActivity = new Intent(getApplicationContext(),
-                                AddItemActivity.class);
-                        startActivity(startCreateActivity);
-
-                    }
-                }
-        );
-    }
-
-    /**
-     * This method is controlling the moment when the process button is
-     * clicked. It ought to then read the barcode and pass that information
-     * along to the appropriate place.
-     * @param v
-     */
-    public void processClick(View v) {
-        tv1 = (TextView) findViewById(R.id.json_text);
-        ImageView myImageView = (ImageView) findViewById(R.id.imgview);
-
-        //The following is an stock image Avery added.
-        final Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext()
-                        .getResources(),
-                R.drawable.doritos_test);
-        myImageView.setImageBitmap(myBitmap);
-
-        BarcodeDetector detector = new BarcodeDetector.Builder(getApplicationContext())
-               .setBarcodeFormats(Barcode.ALL_FORMATS).build();
-
-
-        if (!detector.isOperational()) {
-            tv1.setText(R.string.try_again);
-            return;
-        }
-
-        Frame f = new Frame.Builder().setBitmap(myBitmap).build();
-
-        SparseArray<Barcode> barcodes = detector.detect(f);
-
-        for(int i = 0; i < barcodes.size(); i++){
-            Barcode thisCode = barcodes.valueAt(i);
-            String theCode = thisCode.rawValue;
-            tv1.setText("");
-            myImageView.setImageDrawable(null);
-            Toast.makeText(getApplicationContext(), processUPC(theCode), Toast.LENGTH_LONG).show();
-            i++;
-        }
-        setContentView(R.layout.activity_pantry);
-    }
-
-
-    private String processUPC(String upc){
-        String jsonResult;
-        try{
-            String tag = "PROCESSING UPC";
-            Log.i(tag, upc);
-            RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
-            String result = processJson(task.execute(upc).get());
-            if(result.equals("ADDED")) {
-                jsonResult = "ADDED ITEM TO DATABASE";
-            }
-            if(result.equals("UPDATED")){
-                jsonResult = "UPDATED ITEM QUANTITY";
-            }
-            else{
-                jsonResult = "COULDN'T ADD ITEM";
-            }
-        }catch (Exception e){
-            String tag = "ERROR";
-            Log.e(tag, e.getMessage(), e);
-            jsonResult = "ERROR RETRIEVING JSON";
-        }
-        return jsonResult;
-    }
-
-    private String processJson(String jsonString){
-        String ret = "FAILED";
-        try{
-            JSONObject obj = new JSONObject(jsonString);
-            if(obj.getString("valid").equals("true")){
-                String upc = obj.getString("number");
-                String item = obj.getString("itemname");
-                String description = obj.getString("alias");
-                String price = obj.getString("avg_price");
-
-                try{
-                    db = new MainAppDB(this);
-                    pantryDB = db.openDB();
-                    String check = "SELECT Quantity FROM pantry WHERE UPC = '" + upc + "';";
-                    Cursor c = pantryDB.rawQuery(check, null);
-                    if(!c.moveToFirst()){
-                        String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
-                                "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
-                        pantryDB.execSQL(insert);
-                        ret = "ADDED";
-                    }
-                    else{
-                        int newQuant = Integer.parseInt(c.getString(0)) + 1;
-                        String update = "UPDATE pantry SET Quantity = '" + newQuant + "' WHERE UPC = '" + upc + "';";
-                        pantryDB.execSQL(update);
-                        ret = "UPDATED";
-                    }
-                    pantryDB.close();
-                    db.close();
-                }
-                catch (Exception e){
-                    String tag = "ERROR";
-                    Log.e(tag, e.getMessage(), e);
-                }
-            }
-            if(obj.getString("valid").equals("false")){
-                setContentView(R.layout.activity_pantry_add_item_manual);
-            }
-        } catch (Exception e){
-            Log.e("ERROR", "not a Json object");
-        }
-        return ret;
+        Intent startCreateActivity = new Intent(this, AddItemActivity.class);
+        startCreateActivity.putExtra("command", "pantry");
+        startActivity(startCreateActivity);
     }
 
     private void populateListView(String select) {
@@ -219,32 +97,5 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
 
     }
 
-    private class RetrieveJsonInfoTask extends AsyncTask<String, Void, String> {
-        private final String API_URL = "http://api.upcdatabase.org/json/";
-        private final String API_KEY = "42ffea5cadc47244a0c0da6ff8ba3e42/0";
 
-        protected String doInBackground(String... params) {
-            try {
-                String itemCode = params[0];
-                URL url = new URL(API_URL + API_KEY + itemCode);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-
-                    sb.append(line).append("\n");
-                }
-                br.close();
-                urlConnection.disconnect();
-
-                return sb.toString();
-            } catch (Exception e) {
-                String tag = "ERROR";
-                Log.e(tag, e.getMessage(), e);
-                return null;
-            }
-        }
-    }
 }
