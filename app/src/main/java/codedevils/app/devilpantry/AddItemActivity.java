@@ -31,7 +31,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -59,7 +58,6 @@ public class AddItemActivity extends AppCompatActivity{
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
             break;
@@ -82,7 +80,6 @@ public class AddItemActivity extends AppCompatActivity{
                 .setRequestedPreviewSize(640, 480)
                 .setAutoFocusEnabled(true)
                 .build();
-
 
         //The following is the preview area of the rear facing camera.
         cameraPreview = (SurfaceView) findViewById(R.id.cameraPreview);
@@ -136,11 +133,13 @@ public class AddItemActivity extends AppCompatActivity{
     }
 
     private String processUPC(String upc){
-        String jsonResult = "PROCESSING...";
+        String newText = "PROCESSING " + upc;
+        String jsonResult;
+        barcodeInfo.setText(newText);
         try{
             String tag = "PROCESSING UPC";
             Log.i(tag, upc);
-            AddItemActivity.RetrieveJsonInfoTask task = new AddItemActivity.RetrieveJsonInfoTask();
+            RetrieveJsonInfoTask task = new RetrieveJsonInfoTask();
             jsonResult = processJson(task.execute(upc).get());
         }catch (Exception e){
             String tag = "ERROR";
@@ -151,7 +150,7 @@ public class AddItemActivity extends AppCompatActivity{
     }
 
     private String processJson(String jsonString){
-        String ret = "FAILED";
+        String ret = "";
         try{
             JSONObject obj = new JSONObject(jsonString);
             if(obj.getString("valid").equals("true")){
@@ -165,17 +164,17 @@ public class AddItemActivity extends AppCompatActivity{
                     pantryDB = db.openDB();
                     String check = "SELECT Quantity FROM pantry WHERE UPC = '" + upc + "';";
                     Cursor c = pantryDB.rawQuery(check, null);
-                    if(!c.moveToFirst()){
-                        String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
-                                "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
-                        pantryDB.execSQL(insert);
-                        ret = "ADDED ITEM TO PANTRY";
-                    }
-                    else{
+                    if(c.moveToFirst()){
                         int newQuant = Integer.parseInt(c.getString(0)) + 1;
                         String update = "UPDATE pantry SET Quantity = '" + newQuant + "' WHERE UPC = '" + upc + "';";
                         pantryDB.execSQL(update);
                         ret = "UPDATED EXISTING QUANTITY";
+                    }
+                    else{
+                        String insert = "INSERT INTO pantry(UPC, Item, Description, Quantity, Price) VALUES " +
+                            "('" + upc + "', '" + item + "', '" + description + "', '" + "1" + "', '" + price + "');";
+                        pantryDB.execSQL(insert);
+                        ret = "ADDED ITEM TO PANTRY";
                     }
                     c.close();
                     pantryDB.close();
@@ -184,6 +183,7 @@ public class AddItemActivity extends AppCompatActivity{
                 catch (Exception e){
                     String tag = "ERROR";
                     Log.e(tag, e.getMessage(), e);
+                    ret = "ERROR";
                 }
             }
             if(obj.getString("valid").equals("false")){
@@ -198,7 +198,8 @@ public class AddItemActivity extends AppCompatActivity{
 
     public void processClick(View v){
         cameraSource.stop();
-
+        String barcode = barcodeInfo.getText().toString();
+        Toast.makeText(getApplicationContext(), processUPC(barcode), Toast.LENGTH_LONG).show();
     }
 
     private class RetrieveJsonInfoTask extends AsyncTask<String, Void, String> {

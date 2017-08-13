@@ -96,6 +96,4 @@ public class PantryActivity extends AppCompatActivity implements ListView.OnItem
         //TO DO
 
     }
-
-
 }
