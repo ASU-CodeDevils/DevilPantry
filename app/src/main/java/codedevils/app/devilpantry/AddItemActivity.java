@@ -68,11 +68,13 @@ public class AddItemActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry_add_item);
-
-        final BarcodeDetector detector = new BarcodeDetector.Builder(this).build();
-
         // TextView for the information from the barcode.
         barcodeInfo = (TextView) findViewById((R.id.json_text));
+        setUpCamera();
+    }
+
+    private void setUpCamera(){
+        final BarcodeDetector detector = new BarcodeDetector.Builder(this).build();
         //Captures a stream of images from the camera.
         cameraSource = new CameraSource
                 .Builder(this, detector)
@@ -200,6 +202,7 @@ public class AddItemActivity extends AppCompatActivity{
         cameraSource.stop();
         String barcode = barcodeInfo.getText().toString();
         Toast.makeText(getApplicationContext(), processUPC(barcode), Toast.LENGTH_LONG).show();
+        recreate();
     }
 
     private class RetrieveJsonInfoTask extends AsyncTask<String, Void, String> {
